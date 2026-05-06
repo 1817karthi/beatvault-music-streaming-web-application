@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background:
+    linear-gradient(rgba(8, 8, 10, 0.9), rgba(8, 8, 10, 0.95)),
+    url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1920&q=80"),
+    radial-gradient(circle at 10% 20%, rgba(220, 38, 38, 0.26), transparent 32%),
+    radial-gradient(circle at 80% 10%, rgba(239, 68, 68, 0.22), transparent 36%),
+    radial-gradient(circle at 50% 80%, rgba(127, 29, 29, 0.24), transparent 34%),
+    #09090b;
+  background-size: cover, auto, auto, auto, auto;
+  background-position: center, center, center, center, center;
+  background-attachment: fixed;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.glass-panel {
+  background: rgba(10, 10, 12, 0.72);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.glass-input {
+  background: rgba(24, 24, 27, 0.76);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f1f5f9;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(248, 113, 113, 0.7);
+  box-shadow: 0 0 0 2px rgba(127, 29, 29, 0.45);
+}
+
+.rhap_container {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.rhap_main-controls-button,
+.rhap_time {
+  color: #e2e8f0 !important;
+}
+
+.rhap_progress-filled,
+.rhap_volume-filled {
+  background-color: #ef4444 !important;
+}
+
+.rhap_download-progress,
+.rhap_volume-bar {
+  background-color: rgba(148, 163, 184, 0.35) !important;
+}
