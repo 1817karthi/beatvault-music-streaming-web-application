@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 connectDb();
 
-app.use(cors({ origin: "https://dreamy-tarsier-7c1a09.netlify.app/", credentials: true }));
+app.use(cors({ origin: "https://app.netlify.com/projects/extraordinary-pika-dd9e39/overview", credentials: true }));
 app.use(express.json());
 app.use(morgan("dev"));
 
