@@ -18,6 +18,7 @@ const defaultClientOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://timely-moonbeam-133b32.netlify.app",
+  "https://regal-semolina-33180b.netlify.app",
 ];
 const clientOrigins = [...defaultClientOrigins];
 if (process.env.CLIENT_URL) {
