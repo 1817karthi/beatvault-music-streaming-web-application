@@ -3,13 +3,11 @@
 # Deploy: Render Dashboard → New → Blueprint → connect this Git repo → confirm.
 # You will be prompted for MONGO_URI (MongoDB Atlas connection string).
 #
-# Public URLs follow each service `name`: https://<name>.onrender.com
-# If Render rejects a name, change `name` below and set CLIENT_URL / VITE_API_ORIGIN
-# to the new frontend / API URLs in the dashboard or in this file.
+# If this service name matches your live API hostname, Render keeps the same URL.
 
 services:
   - type: web
-    name: musicapp-api
+    name: beatvault-music-streaming-web-application
     runtime: node
     region: oregon
     plan: free
@@ -23,15 +21,4 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://musicapp-web.onrender.com
-
-  - type: web
-    name: musicapp-web
-    runtime: static
-    region: oregon
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_ORIGIN
-        value: https://musicapp-api.onrender.com
+        value: https://timely-moonbeam-133b32.netlify.app
