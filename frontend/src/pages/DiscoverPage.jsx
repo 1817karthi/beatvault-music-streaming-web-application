@@ -19,11 +19,22 @@ function DiscoverPage() {
 
   const fetchTracks = async (searchValue = search, genreValue = genre) => {
     setLoading(true);
-    const { data } = await api.get(
-      `/tracks?q=${encodeURIComponent(searchValue)}&genre=${encodeURIComponent(genreValue)}`
-    );
-    setTracks(data);
-    setLoading(false);
+    setStatus("");
+    try {
+      const { data } = await api.get(
+        `/tracks?q=${encodeURIComponent(searchValue)}&genre=${encodeURIComponent(genreValue)}`
+      );
+      setTracks(data || []);
+    } catch (error) {
+      setTracks([]);
+      setStatus(
+        error.response?.data?.message ||
+          error.message ||
+          "Could not load tracks. Check that the API is running and CORS allows this site."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchTracksByGenre = async (selectedGenre) => {
@@ -32,14 +43,25 @@ function DiscoverPage() {
   };
 
   const fetchRecommendations = async () => {
-    const { data } = await api.get("/tracks/recommendations");
-    setRecommended(data);
+    try {
+      const { data } = await api.get("/tracks/recommendations");
+      setRecommended(data || []);
+    } catch (_error) {
+      setRecommended([]);
+    }
   };
 
   const fetchPlaylists = async () => {
-    if (!isAuthenticated) return;
-    const { data } = await api.get("/playlists");
-    setPlaylists(data);
+    if (!isAuthenticated) {
+      setPlaylists([]);
+      return;
+    }
+    try {
+      const { data } = await api.get("/playlists");
+      setPlaylists(data || []);
+    } catch (_error) {
+      setPlaylists([]);
+    }
   };
 
   const addDemoSongs = async () => {
@@ -79,7 +101,12 @@ function DiscoverPage() {
     }
     fetchRecommendations();
     fetchPlaylists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load only
   }, []);
+
+  useEffect(() => {
+    fetchPlaylists();
+  }, [isAuthenticated]);
 
   const trending = useMemo(() => recommended.slice(0, 5), [recommended]);
   const genres = useMemo(
@@ -137,7 +164,11 @@ function DiscoverPage() {
       {loading ? (
         <p className="text-sm text-slate-300">Loading music...</p>
       ) : tracks.length === 0 ? (
-        <p className="glass-panel rounded-xl p-4 text-sm text-slate-300">No tracks found. Try another search or add demo songs.</p>
+        <p className="glass-panel rounded-xl p-4 text-sm text-slate-300">
+          {status
+            ? "No tracks loaded. Resolve the message above, then try Search again."
+            : "No tracks found. Try another search or add demo songs."}
+        </p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {tracks.map((track, idx) => (

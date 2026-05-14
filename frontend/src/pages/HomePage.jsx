@@ -6,6 +6,7 @@ function HomePage() {
   const [search, setSearch] = useState("");
   const [featured, setFeatured] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const navigate = useNavigate();
 
   const goToDiscover = () => {
@@ -16,10 +17,16 @@ function HomePage() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
+        setLoadError("");
         const { data } = await api.get("/tracks/recommendations");
         setFeatured(data || []);
-      } catch (_error) {
+      } catch (error) {
         setFeatured([]);
+        setLoadError(
+          error.response?.data?.message ||
+            error.message ||
+            "Could not reach the API. For local dev, run the backend on port 5000; for Netlify, set VITE_API_ORIGIN."
+        );
       } finally {
         setLoading(false);
       }
@@ -92,6 +99,10 @@ function HomePage() {
           <h3 className="text-xl font-semibold text-red-200">Featured Tracks</h3>
           <Link to="/discover" className="text-sm text-red-300 underline">See all</Link>
         </div>
+
+        {loadError && (
+          <p className="glass-panel mb-3 rounded-xl p-3 text-sm text-amber-200">{loadError}</p>
+        )}
 
         {loading ? (
           <p className="text-sm text-slate-300">Loading featured tracks...</p>

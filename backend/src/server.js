@@ -14,7 +14,18 @@ dotenv.config();
 const app = express();
 connectDb();
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+const clientOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL.replace(/\/$/, "")] : []),
+];
+
+app.use(
+  cors({
+    origin: clientOrigins,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(morgan("dev"));
 
