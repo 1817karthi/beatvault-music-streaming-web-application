@@ -51,39 +51,49 @@ exports.addComment = async (req, res) => {
 };
 
 exports.uploadTrack = async (req, res) => {
-  const file = req.file;
-  if (!file) {
-    return res.status(400).json({ message: "Audio file is required" });
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: "Audio file is required" });
+    }
+
+    const track = await Track.create({
+      ...req.body,
+      audioUrl: `/audio/${file.filename}`,
+    });
+
+    return res.status(201).json(track);
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({ message: "Database error during upload. Please check backend logs or MongoDB connection." });
   }
-
-  const track = await Track.create({
-    ...req.body,
-    audioUrl: `/audio/${file.filename}`,
-  });
-
-  return res.status(201).json(track);
 };
 
 exports.uploadTrackByUrl = async (req, res) => {
-  const { title, artist, album, genre, movieName, audioUrl } = req.body;
-  if (!audioUrl) {
-    return res.status(400).json({ message: "Audio URL is required" });
+  try {
+    const { title, artist, album, genre, movieName, audioUrl } = req.body;
+    if (!audioUrl) {
+      return res.status(400).json({ message: "Audio URL is required" });
+    }
+
+    if (!/^https?:\/\/.+/i.test(audioUrl)) {
+      return res.status(400).json({ message: "Audio URL must start with http:// or https://" });
+    }
+
+    const track = await Track.create({
+      title,
+      artist,
+      album,
+      genre,
+      movieName,
+      audioUrl,
+    });
+
+    return res.status(201).json(track);
+  } catch (error) {
+    console.error("URL Upload error:", error);
+    return res.status(500).json({ message: "Database error during upload. Please check backend logs or MongoDB connection." });
   }
-
-  if (!/^https?:\/\/.+/i.test(audioUrl)) {
-    return res.status(400).json({ message: "Audio URL must start with http:// or https://" });
-  }
-
-  const track = await Track.create({
-    title,
-    artist,
-    album,
-    genre,
-    movieName,
-    audioUrl,
-  });
-
-  return res.status(201).json(track);
 };
 
 exports.seedDemoTracks = async (_req, res) => {

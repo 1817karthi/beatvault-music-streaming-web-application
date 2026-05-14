@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const {
   listTracks,
   getRecommendations,
@@ -11,8 +12,13 @@ const {
   seedDemoTracks,
 } = require("../controllers/trackController");
 
+const audioDir = path.join(__dirname, "../../public/audio");
+if (!fs.existsSync(audioDir)) {
+  fs.mkdirSync(audioDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, "../../public/audio"),
+  destination: audioDir,
   filename: (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 
