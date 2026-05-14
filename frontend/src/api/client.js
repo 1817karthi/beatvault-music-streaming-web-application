@@ -21,4 +21,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      if (typeof localStorage !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+      // Optional: redirect to auth or reload to reflect logged out state
+      // window.location.href = "/auth";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

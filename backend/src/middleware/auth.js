@@ -17,13 +17,17 @@ const auth = (req, res, next) => {
   try {
     const payload = jwt.verify(token, secret);
     if (!payload?.id) {
+      console.error("Auth middleware error: missing payload ID");
       return res.status(401).json({ message: "Invalid token" });
     }
     req.user = { id: payload.id };
-    next();
-  } catch (_error) {
+  } catch (error) {
+    console.error("Auth middleware caught an error:", error.message);
+    console.error("Token that failed:", token);
     return res.status(401).json({ message: "Invalid token" });
   }
+
+  next();
 };
 
 module.exports = auth;

@@ -1,7 +1,0 @@
-[build]
-  base = "frontend"
-  command = "npm run build"
-  publish = "dist"
-
-[build.environment]
-  VITE_API_ORIGIN = "https://beatvault-music-streaming-web-application.onrender.com"
