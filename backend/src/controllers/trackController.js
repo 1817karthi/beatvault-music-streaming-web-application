@@ -1,5 +1,7 @@
 const Track = require("../models/Track");
+const jwt = require("jsonwebtoken");
 const { readBearerToken } = require("../utils/bearerToken");
+const { getJwtSecret } = require("../config/jwtSecret");
 
 exports.listTracks = async (req, res) => {
   const { q = "", genre = "" } = req.query;
@@ -24,20 +26,22 @@ exports.listTracks = async (req, res) => {
 };
 
 exports.getRecommendations = async (req, res) => {
-  const token = readBearerToken(req.headers.authorization);
+  const token = readBearerToken(req.get("Authorization") || req.headers.authorization);
 
   let preferredGenres = [];
   let preferredArtists = [];
 
   if (token) {
-    try {
-      const jwt = require("jsonwebtoken");
-      const payload = jwt.verify(token, process.env.JWT_SECRET);
-      const likedTracks = await Track.find({ likes: payload.id }).select("genre artist");
-      preferredGenres = likedTracks.map((track) => track.genre).filter(Boolean);
-      preferredArtists = likedTracks.map((track) => track.artist).filter(Boolean);
-    } catch (_error) {
-      // Gracefully fall back to global recommendations if token is invalid.
+    const secret = getJwtSecret();
+    if (secret) {
+      try {
+        const payload = jwt.verify(token, secret);
+        const likedTracks = await Track.find({ likes: payload.id }).select("genre artist");
+        preferredGenres = likedTracks.map((track) => track.genre).filter(Boolean);
+        preferredArtists = likedTracks.map((track) => track.artist).filter(Boolean);
+      } catch (_error) {
+        // Gracefully fall back to global recommendations if token is invalid.
+      }
     }
   }
 

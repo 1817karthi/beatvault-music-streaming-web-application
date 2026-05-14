@@ -5,7 +5,8 @@ function readBearerToken(header) {
   if (!/^Bearer\s+/i.test(trimmed)) return null;
   const rest = trimmed.replace(/^Bearer\s+/i, "").trim();
   if (!rest) return null;
-  return rest.replace(/^Bearer\s+/i, "").trim();
+  const jwtPart = rest.replace(/^Bearer\s+/i, "").trim();
+  return jwtPart.replace(/\s+/g, "");
 }
 
 module.exports = { readBearerToken };

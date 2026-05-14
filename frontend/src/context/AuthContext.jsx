@@ -1,22 +1,26 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import api from "../api/client";
+import { setAuthToken } from "../api/tokenSync";
 
 const AuthContext = createContext(null);
 
+function normalizeStoredToken(raw) {
+  return String(raw ?? "")
+    .trim()
+    .replace(/^Bearer\s+/i, "");
+}
+
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [token, setToken] = useState(() => {
+    const initial = typeof localStorage !== "undefined" ? localStorage.getItem("token") : "";
+    const normalized = normalizeStoredToken(initial);
+    setAuthToken(normalized);
+    return normalized;
+  });
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
-
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [token]);
 
   useEffect(() => {
     if (user) {
@@ -28,19 +32,22 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post("/auth/login", { email, password });
-    const raw = String(data.token ?? "").trim().replace(/^Bearer\s+/i, "");
+    const raw = normalizeStoredToken(data.token);
+    setAuthToken(raw);
     setToken(raw);
     setUser(data.user);
   };
 
   const register = async (name, email, password) => {
     const { data } = await api.post("/auth/register", { name, email, password });
-    const raw = String(data.token ?? "").trim().replace(/^Bearer\s+/i, "");
+    const raw = normalizeStoredToken(data.token);
+    setAuthToken(raw);
     setToken(raw);
     setUser(data.user);
   };
 
   const logout = () => {
+    setAuthToken("");
     setToken("");
     setUser(null);
   };
