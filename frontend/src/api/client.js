@@ -1,7 +1,8 @@
 import axios from "axios";
+import { apiBaseUrl } from "./apiOrigin";
 
 const api = axios.create({
-  baseURL: "https://beatvault-music-ygue.onrender.com/api",
+  baseURL: apiBaseUrl,
 });
 
 api.interceptors.request.use((config) => {

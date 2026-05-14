@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { usePlayer } from "../context/PlayerContext";
+import { apiOrigin } from "../api/apiOrigin";
 
 function PlayerBar() {
   const {
@@ -19,7 +20,7 @@ function PlayerBar() {
   const playerRef = useRef(null);
   const source = currentTrack?.audioUrl?.startsWith("http")
     ? currentTrack.audioUrl
-    : `http://localhost:5000${currentTrack?.audioUrl || ""}`;
+    : `${apiOrigin}${currentTrack?.audioUrl || ""}`;
 
   useEffect(() => {
     const audio = playerRef.current?.audio?.current;
