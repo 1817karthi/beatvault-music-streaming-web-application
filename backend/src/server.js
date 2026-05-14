@@ -14,26 +14,7 @@ dotenv.config();
 const app = express();
 connectDb();
 
-const defaultClientOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "https://timely-moonbeam-133b32.netlify.app",
-  "https://regal-semolina-33180b.netlify.app",
-];
-const clientOrigins = [...defaultClientOrigins];
-if (process.env.CLIENT_URL) {
-  const normalized = process.env.CLIENT_URL.replace(/\/$/, "");
-  if (!clientOrigins.includes(normalized)) {
-    clientOrigins.push(normalized);
-  }
-}
-
-app.use(
-  cors({
-    origin: clientOrigins,
-    credentials: true,
-  }),
-);
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(morgan("dev"));
 

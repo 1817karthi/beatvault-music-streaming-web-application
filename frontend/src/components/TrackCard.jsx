@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import api from "../api/client";
-import { apiOrigin } from "../api/apiOrigin";
 
 function TrackCard({ track, playlists, onAddToPlaylist, onPlay, refresh }) {
   const [comment, setComment] = useState("");
@@ -44,7 +43,7 @@ function TrackCard({ track, playlists, onAddToPlaylist, onPlay, refresh }) {
         <button onClick={onPlay} className="rounded bg-red-500/90 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">Play</button>
         <button onClick={like} className="rounded bg-zinc-900/90 px-3 py-1 text-sm font-medium text-red-300 backdrop-blur-md">Like ({track.likes?.length || 0})</button>
         {isLocalTrack && (
-          <a href={`${apiOrigin}/api/download/${track.audioUrl.split("/").pop()}`} className="rounded bg-red-700/90 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">Download</a>
+          <a href={`http://localhost:5000/api/download/${track.audioUrl.split("/").pop()}`} className="rounded bg-red-700/90 px-3 py-1 text-sm font-medium text-white backdrop-blur-md">Download</a>
         )}
       </div>
 
