@@ -37,7 +37,8 @@ function UploadPage() {
     formData.append("audio", audio);
 
     try {
-      await api.post("/tracks", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      // Let axios set multipart boundary; manual Content-Type breaks uploads and can confuse proxies.
+      await api.post("/tracks", formData);
       setMessage("Song uploaded successfully.");
       clearForm();
     } catch (error) {

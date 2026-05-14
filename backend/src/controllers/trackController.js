@@ -1,4 +1,5 @@
 const Track = require("../models/Track");
+const { readBearerToken } = require("../utils/bearerToken");
 
 exports.listTracks = async (req, res) => {
   const { q = "", genre = "" } = req.query;
@@ -23,9 +24,7 @@ exports.listTracks = async (req, res) => {
 };
 
 exports.getRecommendations = async (req, res) => {
-  const token = req.headers.authorization?.startsWith("Bearer ")
-    ? req.headers.authorization.split(" ")[1]
-    : null;
+  const token = readBearerToken(req.headers.authorization);
 
   let preferredGenres = [];
   let preferredArtists = [];

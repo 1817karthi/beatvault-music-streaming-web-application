@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
+const { readBearerToken } = require("../utils/bearerToken");
 
 const auth = (req, res, next) => {
-  const token = req.headers.authorization?.startsWith("Bearer ")
-    ? req.headers.authorization.split(" ")[1]
-    : null;
+  const token = readBearerToken(req.headers.authorization);
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -11,6 +10,9 @@ const auth = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload?.id) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
     req.user = { id: payload.id };
     next();
   } catch (_error) {

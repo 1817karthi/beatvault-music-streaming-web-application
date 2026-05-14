@@ -2,7 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+const signToken = (userId) =>
+  jwt.sign({ id: String(userId) }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
