@@ -1,7 +1,4 @@
 const Track = require("../models/Track");
-const jwt = require("jsonwebtoken");
-const { readBearerToken } = require("../utils/bearerToken");
-const { getJwtSecret } = require("../config/jwtSecret");
 
 exports.listTracks = async (req, res) => {
   const { q = "", genre = "" } = req.query;
@@ -26,42 +23,8 @@ exports.listTracks = async (req, res) => {
 };
 
 exports.getRecommendations = async (req, res) => {
-  const token = readBearerToken(req.get("Authorization") || req.headers.authorization);
-
-  let preferredGenres = [];
-  let preferredArtists = [];
-
-  if (token) {
-    const secret = getJwtSecret();
-    if (secret) {
-      try {
-        const payload = jwt.verify(token, secret);
-        const likedTracks = await Track.find({ likes: payload.id }).select("genre artist");
-        preferredGenres = likedTracks.map((track) => track.genre).filter(Boolean);
-        preferredArtists = likedTracks.map((track) => track.artist).filter(Boolean);
-      } catch (_error) {
-        // Gracefully fall back to global recommendations if token is invalid.
-      }
-    }
-  }
-
-  const personalizedQuery =
-    preferredGenres.length || preferredArtists.length
-      ? {
-          $or: [
-            preferredGenres.length ? { genre: { $in: preferredGenres } } : null,
-            preferredArtists.length ? { artist: { $in: preferredArtists } } : null,
-          ].filter(Boolean),
-        }
-      : {};
-
-  const tracks = await Track.find(personalizedQuery).sort({ likes: -1, createdAt: -1 }).limit(12);
-  if (tracks.length > 0) {
-    return res.json(tracks);
-  }
-
-  const fallbackTracks = await Track.find().sort({ likes: -1, createdAt: -1 }).limit(12);
-  return res.json(fallbackTracks);
+  const tracks = await Track.find().sort({ likes: -1, createdAt: -1 }).limit(12);
+  return res.json(tracks);
 };
 
 exports.toggleLike = async (req, res) => {
@@ -70,13 +33,7 @@ exports.toggleLike = async (req, res) => {
     return res.status(404).json({ message: "Track not found" });
   }
 
-  const userId = req.user.id;
-  const index = track.likes.findIndex((id) => id.toString() === userId);
-  if (index >= 0) {
-    track.likes.splice(index, 1);
-  } else {
-    track.likes.push(userId);
-  }
+  track.likes += 1;
 
   await track.save();
   return res.json(track);
@@ -88,7 +45,7 @@ exports.addComment = async (req, res) => {
     return res.status(404).json({ message: "Track not found" });
   }
 
-  track.comments.unshift({ user: req.user.id, text: req.body.text });
+  track.comments.unshift({ author: req.body.author || "Anonymous", text: req.body.text });
   await track.save();
   return res.json(track);
 };
@@ -102,7 +59,6 @@ exports.uploadTrack = async (req, res) => {
   const track = await Track.create({
     ...req.body,
     audioUrl: `/audio/${file.filename}`,
-    uploadedBy: req.user.id,
   });
 
   return res.status(201).json(track);
@@ -125,7 +81,6 @@ exports.uploadTrackByUrl = async (req, res) => {
     genre,
     movieName,
     audioUrl,
-    uploadedBy: req.user.id,
   });
 
   return res.status(201).json(track);

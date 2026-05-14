@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const auth = require("../middleware/auth");
 const {
   listTracks,
   getRecommendations,
@@ -23,9 +22,9 @@ const router = express.Router();
 router.get("/", listTracks);
 router.get("/recommendations", getRecommendations);
 router.post("/seed-demo", seedDemoTracks);
-router.post("/url", auth, uploadTrackByUrl);
-router.post("/", auth, upload.single("audio"), uploadTrack);
-router.put("/:id/like", auth, toggleLike);
-router.post("/:id/comments", auth, addComment);
+router.post("/url", uploadTrackByUrl);
+router.post("/", upload.single("audio"), uploadTrack);
+router.put("/:id/like", toggleLike);
+router.post("/:id/comments", addComment);
 
 module.exports = router;

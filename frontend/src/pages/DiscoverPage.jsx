@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import api from "../api/client";
 import TrackCard from "../components/TrackCard";
 import { usePlayer } from "../context/PlayerContext";
-import { useAuth } from "../context/AuthContext";
 
 function DiscoverPage() {
   const [tracks, setTracks] = useState([]);
@@ -15,7 +14,6 @@ function DiscoverPage() {
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const { playTrackList } = usePlayer();
-  const { isAuthenticated } = useAuth();
 
   const fetchTracks = async (searchValue = search, genreValue = genre) => {
     setLoading(true);
@@ -52,10 +50,6 @@ function DiscoverPage() {
   };
 
   const fetchPlaylists = async () => {
-    if (!isAuthenticated) {
-      setPlaylists([]);
-      return;
-    }
     try {
       const { data } = await api.get("/playlists");
       setPlaylists(data || []);
@@ -103,10 +97,6 @@ function DiscoverPage() {
     fetchPlaylists();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load only
   }, []);
-
-  useEffect(() => {
-    fetchPlaylists();
-  }, [isAuthenticated]);
 
   const trending = useMemo(() => recommended.slice(0, 5), [recommended]);
   const genres = useMemo(

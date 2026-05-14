@@ -1,18 +1,18 @@
 const Playlist = require("../models/Playlist");
 
 exports.listPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({ createdBy: req.user.id }).populate("tracks");
+  const playlists = await Playlist.find().populate("tracks");
   res.json(playlists);
 };
 
 exports.createPlaylist = async (req, res) => {
-  const playlist = await Playlist.create({ ...req.body, createdBy: req.user.id });
+  const playlist = await Playlist.create(req.body);
   res.status(201).json(playlist);
 };
 
 exports.updatePlaylist = async (req, res) => {
   const playlist = await Playlist.findOneAndUpdate(
-    { _id: req.params.id, createdBy: req.user.id },
+    { _id: req.params.id },
     req.body,
     { new: true }
   ).populate("tracks");
@@ -25,7 +25,7 @@ exports.updatePlaylist = async (req, res) => {
 };
 
 exports.removePlaylist = async (req, res) => {
-  const deleted = await Playlist.findOneAndDelete({ _id: req.params.id, createdBy: req.user.id });
+  const deleted = await Playlist.findOneAndDelete({ _id: req.params.id });
   if (!deleted) {
     return res.status(404).json({ message: "Playlist not found" });
   }
@@ -39,12 +39,7 @@ exports.togglePlaylistLike = async (req, res) => {
     return res.status(404).json({ message: "Playlist not found" });
   }
 
-  const index = playlist.likes.findIndex((id) => id.toString() === req.user.id);
-  if (index >= 0) {
-    playlist.likes.splice(index, 1);
-  } else {
-    playlist.likes.push(req.user.id);
-  }
+  playlist.likes += 1;
 
   await playlist.save();
   res.json(playlist);
@@ -56,7 +51,7 @@ exports.addPlaylistComment = async (req, res) => {
     return res.status(404).json({ message: "Playlist not found" });
   }
 
-  playlist.comments.unshift({ user: req.user.id, text: req.body.text });
+  playlist.comments.unshift({ author: req.body.author || "Anonymous", text: req.body.text });
   await playlist.save();
   res.json(playlist);
 };

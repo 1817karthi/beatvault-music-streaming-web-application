@@ -4,12 +4,11 @@ const playlistSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: String,
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     tracks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Track" }],
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    likes: { type: Number, default: 0 },
     comments: [
       {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        author: { type: String, default: "Anonymous" },
         text: { type: String, required: true },
       },
     ],

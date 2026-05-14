@@ -5,7 +5,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const connectDb = require("./config/db");
-const authRoutes = require("./routes/authRoutes");
 const trackRoutes = require("./routes/trackRoutes");
 const playlistRoutes = require("./routes/playlistRoutes");
 
@@ -46,7 +45,6 @@ app.get("/api/download/:filename", (req, res) => {
   return res.download(filePath);
 });
 
-app.use("/api/auth", authRoutes);
 app.use("/api/tracks", trackRoutes);
 app.use("/api/playlists", playlistRoutes);
 

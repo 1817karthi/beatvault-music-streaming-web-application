@@ -9,11 +9,10 @@ const trackSchema = new mongoose.Schema(
     genre: String,
     coverUrl: String,
     audioUrl: { type: String, required: true },
-    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    likes: { type: Number, default: 0 },
     comments: [
       {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        author: { type: String, default: "Anonymous" },
         text: { type: String, required: true },
       },
     ],
