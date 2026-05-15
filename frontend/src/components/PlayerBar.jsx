@@ -16,6 +16,7 @@ function PlayerBar() {
     onTrackEnd,
     volume,
     setVolume,
+    replayKey,
   } = usePlayer();
   const playerRef = useRef(null);
   const source = currentTrack?.audioUrl?.startsWith("http")
@@ -73,6 +74,7 @@ function PlayerBar() {
           </div>
         </div>
         <AudioPlayer
+          key={`${currentTrack._id}-${replayKey}`}
           ref={playerRef}
           src={source}
           volume={volume}
